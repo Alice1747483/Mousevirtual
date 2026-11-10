@@ -1,0 +1,385 @@
+-- Virtual Mouse Mobile - Cursor Roblox + AUTO SUPER POTENTE (Sem Lag)
+local UserInputService = game:GetService("UserInputService")
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local VirtualInputManager = game:GetService("VirtualInputManager")
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "VirtualMouseGui"
+screenGui.ResetOnSpawn = false
+screenGui.IgnoreGuiInset = true
+screenGui.DisplayOrder = 999999
+screenGui.Parent = playerGui
+
+-- === PAINEL TOUCHPAD ===
+local touchpad = Instance.new("Frame")
+touchpad.Name = "Touchpad"
+touchpad.Size = UDim2.new(0, 160, 0, 195)
+touchpad.Position = UDim2.new(1, -180, 1, -215)
+touchpad.BackgroundColor3 = Color3.fromRGB(5, 15, 50)
+touchpad.BackgroundTransparency = 0.15
+touchpad.BorderSizePixel = 0
+touchpad.ZIndex = 999
+touchpad.Active = true
+touchpad.Parent = screenGui
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 16)
+corner.Parent = touchpad
+
+local stroke = Instance.new("UIStroke")
+stroke.Color = Color3.fromRGB(100, 180, 255)
+stroke.Thickness = 3
+stroke.Transparency = 0.4
+stroke.Parent = touchpad
+
+local touchBlocker = Instance.new("TextButton")
+touchBlocker.Name = "TouchBlocker"
+touchBlocker.Size = UDim2.new(1, 0, 1, 0)
+touchBlocker.BackgroundTransparency = 1
+touchBlocker.Text = ""
+touchBlocker.AutoButtonColor = false
+touchBlocker.ZIndex = 999
+touchBlocker.Active = true
+touchBlocker.Parent = touchpad
+
+local label = Instance.new("TextLabel")
+label.Size = UDim2.new(1, 0, 0, 40)
+label.Position = UDim2.new(0, 0, 0, 8)
+label.BackgroundTransparency = 1
+label.Text = "TOUCHPAD\nToque = clique | MOVE = mover"
+label.TextColor3 = Color3.fromRGB(220, 220, 220)
+label.TextScaled = true
+label.Font = Enum.Font.GothamBold
+label.ZIndex = 1001
+label.Parent = touchpad
+
+local moveButton = Instance.new("TextButton")
+moveButton.Size = UDim2.new(0, 45, 0, 32)
+moveButton.Position = UDim2.new(1, -52, 0, 5)
+moveButton.BackgroundColor3 = Color3.fromRGB(80, 80, 255)
+moveButton.BackgroundTransparency = 0.3
+moveButton.Text = "MOVE"
+moveButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+moveButton.TextScaled = true
+moveButton.Font = Enum.Font.Gotham
+moveButton.ZIndex = 1010
+moveButton.Parent = touchpad
+Instance.new("UICorner", moveButton).CornerRadius = UDim.new(0, 8)
+
+-- SENSIBILIDADE
+local sensMinus = Instance.new("TextButton")
+sensMinus.Size = UDim2.new(0, 35, 0, 30)
+sensMinus.Position = UDim2.new(0, 5, 0, 55)
+sensMinus.BackgroundColor3 = Color3.fromRGB(255, 140, 60)
+sensMinus.BackgroundTransparency = 0.3
+sensMinus.Text = "-"
+sensMinus.TextColor3 = Color3.fromRGB(255, 255, 255)
+sensMinus.TextScaled = true
+sensMinus.Font = Enum.Font.GothamBold
+sensMinus.ZIndex = 1010
+sensMinus.Parent = touchpad
+Instance.new("UICorner", sensMinus).CornerRadius = UDim.new(0, 8)
+
+local sensPlus = Instance.new("TextButton")
+sensPlus.Size = UDim2.new(0, 35, 0, 30)
+sensPlus.Position = UDim2.new(0, 45, 0, 55)
+sensPlus.BackgroundColor3 = Color3.fromRGB(60, 200, 100)
+sensPlus.BackgroundTransparency = 0.3
+sensPlus.Text = "+"
+sensPlus.TextColor3 = Color3.fromRGB(255, 255, 255)
+sensPlus.TextScaled = true
+sensPlus.Font = Enum.Font.GothamBold
+sensPlus.ZIndex = 1010
+sensPlus.Parent = touchpad
+Instance.new("UICorner", sensPlus).CornerRadius = UDim.new(0, 8)
+
+local sensLabel = Instance.new("TextLabel")
+sensLabel.Size = UDim2.new(0, 70, 0, 26)
+sensLabel.Position = UDim2.new(0, 85, 0, 57)
+sensLabel.BackgroundTransparency = 1
+sensLabel.Text = "Sens 3.20"
+sensLabel.TextColor3 = Color3.fromRGB(180, 220, 255)
+sensLabel.TextScaled = true
+sensLabel.Font = Enum.Font.GothamSemibold
+sensLabel.ZIndex = 1001
+sensLabel.Parent = touchpad
+
+-- === AUTO SUPER POTENTE (UM BOTÃO SÓ) ===
+local autoBtn = Instance.new("TextButton")
+autoBtn.Name = "AutoBtn"
+autoBtn.Size = UDim2.new(1, -10, 0, 36)
+autoBtn.Position = UDim2.new(0, 5, 0, 95)
+autoBtn.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
+autoBtn.BackgroundTransparency = 0.15
+autoBtn.Text = "⚡ AUTO OFF"
+autoBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+autoBtn.TextScaled = true
+autoBtn.Font = Enum.Font.GothamBold
+autoBtn.ZIndex = 1010
+autoBtn.Parent = touchpad
+Instance.new("UICorner", autoBtn).CornerRadius = UDim.new(0, 10)
+
+-- BARRA DE INTENSIDADE (cicla entre níveis)
+local powerBtn = Instance.new("TextButton")
+powerBtn.Name = "PowerBtn"
+powerBtn.Size = UDim2.new(1, -10, 0, 26)
+powerBtn.Position = UDim2.new(0, 5, 0, 137)
+powerBtn.BackgroundColor3 = Color3.fromRGB(120, 60, 255)
+powerBtn.BackgroundTransparency = 0.3
+powerBtn.Text = "POTÊNCIA: MÉDIA"
+powerBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+powerBtn.TextScaled = true
+powerBtn.Font = Enum.Font.GothamSemibold
+powerBtn.ZIndex = 1010
+powerBtn.Parent = touchpad
+Instance.new("UICorner", powerBtn).CornerRadius = UDim.new(0, 8)
+
+-- === TOGGLE VISIBILIDADE ===
+local toggleBtn = Instance.new("TextButton")
+toggleBtn.Name = "ToggleButton"
+toggleBtn.Size = UDim2.new(0, 28, 0, 28)
+toggleBtn.Position = UDim2.new(1, -33, 0, 5)
+toggleBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 60)
+toggleBtn.BackgroundTransparency = 0.2
+toggleBtn.Text = "👁"
+toggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+toggleBtn.TextScaled = true
+toggleBtn.Font = Enum.Font.GothamBold
+toggleBtn.ZIndex = 1010
+toggleBtn.Parent = touchpad
+Instance.new("UICorner", toggleBtn).CornerRadius = UDim.new(0, 8)
+
+local visualCursor = Instance.new("ImageLabel")
+visualCursor.Name = "VisualCursor"
+visualCursor.Size = UDim2.new(0, 52, 0, 52)
+visualCursor.BackgroundTransparency = 1
+visualCursor.ZIndex = 100000
+visualCursor.Image = "rbxassetid://3259050989"
+visualCursor.Parent = screenGui
+
+-- === VARIÁVEIS ===
+local cursorX, cursorY = 0, 0
+local draggingPanel = nil
+local touchpadTouch = nil
+local lastTouchPos = Vector2.zero
+local touchStartPos = Vector2.zero
+local speed = 3.2
+local lastTapTime = 0
+local TAP_THRESHOLD = 0.5
+local opcoesVisiveis = true
+local clicking = false
+
+-- === AUTO CLICK VARIÁVEIS ===
+local autoAtivo = false
+local autoThread = nil
+local autoCliquesPorSeg = 25   -- CPS padrão (pode ir até 500 sem lag)
+local autoAccumulator = 0
+
+-- Níveis de potência (CPS)
+local niveisPotencia = {
+    {nome = "LENTO",  cps = 10},
+    {nome = "MÉDIA",  cps = 25},
+    {nome = "RÁPIDO", cps = 60},
+    {nome = "FORTE",  cps = 120},
+    {nome = "TURBO",  cps = 250},
+    {nome = "MÁXIMO", cps = 500},
+}
+local nivelIndex = 2
+
+local lastSentX, lastSentY = -1, -1
+
+local function centerCursor()
+    local vs = workspace.CurrentCamera.ViewportSize
+    cursorX = (vs.X / 2) - 26
+    cursorY = (vs.Y / 2) - 26
+end
+centerCursor()
+
+local function updateRobloxCursor(force)
+    local cx = math.floor(cursorX + 26)
+    local cy = math.floor(cursorY + 26)
+    if not force and cx == lastSentX and cy == lastSentY then return end
+    lastSentX, lastSentY = cx, cy
+    VirtualInputManager:SendMouseMoveEvent(cx, cy, game)
+end
+
+-- Clique rápido sem task.wait (usa down+up juntos: sem frame de pausa = sem lag)
+local function fastClick()
+    local cx = math.floor(cursorX + 26)
+    local cy = math.floor(cursorY + 26)
+    VirtualInputManager:SendMouseButtonEvent(cx, cy, 0, true, game, 0)
+    VirtualInputManager:SendMouseButtonEvent(cx, cy, 0, false, game, 0)
+end
+
+local function doClick()
+    if clicking then return end
+    clicking = true
+    local cx = math.floor(cursorX + 26)
+    local cy = math.floor(cursorY + 26)
+    VirtualInputManager:SendMouseButtonEvent(cx, cy, 0, true, game, 0)
+    task.wait(0.03)
+    VirtualInputManager:SendMouseButtonEvent(cx, cy, 0, false, game, 0)
+    clicking = false
+end
+
+local function updateSensLabel()
+    sensLabel.Text = string.format("Sens %.2f", speed)
+end
+
+local function changeSpeed(delta)
+    speed = math.clamp(speed + delta, 0.5, 12)
+    updateSensLabel()
+end
+
+sensMinus.MouseButton1Click:Connect(function() changeSpeed(-0.25) end)
+sensPlus.MouseButton1Click:Connect(function() changeSpeed(0.25) end)
+
+-- === AUTO CLICK POTENTE (baseado em accumulator no RenderStepped) ===
+-- Isso evita task.wait acumulado e mantém FPS estável em qualquer CPS.
+local function atualizarBotaoAuto()
+    if autoAtivo then
+        autoBtn.Text = string.format("⚡ AUTO ON (%d cps)", autoCliquesPorSeg)
+        autoBtn.BackgroundColor3 = Color3.fromRGB(60, 220, 100)
+    else
+        autoBtn.Text = "⚡ AUTO OFF"
+        autoBtn.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
+    end
+end
+
+local function atualizarBotaoPotencia()
+    local nivel = niveisPotencia[nivelIndex]
+    powerBtn.Text = string.format("POTÊNCIA: %s (%d)", nivel.nome, nivel.cps)
+    autoCliquesPorSeg = nivel.cps
+    if autoAtivo then atualizarBotaoAuto() end
+end
+
+-- Loop no RenderStepped: processa cliques acumulados com base em dt real.
+-- Sem task.wait = sem lag de scheduler. Custo: 1 verificação por frame.
+RunService.RenderStepped:Connect(function(dt)
+    if not autoAtivo then return end
+    autoAccumulator = autoAccumulator + (dt * autoCliquesPorSeg)
+    -- Limita para não explodir se o jogo travar por um frame
+    if autoAccumulator > autoCliquesPorSeg * 0.1 then
+        autoAccumulator = autoCliquesPorSeg * 0.1
+    end
+    while autoAccumulator >= 1 do
+        fastClick()
+        autoAccumulator = autoAccumulator - 1
+    end
+end)
+
+autoBtn.MouseButton1Click:Connect(function()
+    autoAtivo = not autoAtivo
+    autoAccumulator = 0
+    atualizarBotaoAuto()
+end)
+
+powerBtn.MouseButton1Click:Connect(function()
+    nivelIndex = nivelIndex + 1
+    if nivelIndex > #niveisPotencia then nivelIndex = 1 end
+    atualizarBotaoPotencia()
+end)
+
+-- === VISIBILIDADE ===
+local function setOpcoesVisiveis(estado)
+    opcoesVisiveis = estado
+    label.Visible = estado
+    moveButton.Visible = estado
+    sensMinus.Visible = estado
+    sensPlus.Visible = estado
+    sensLabel.Visible = estado
+    autoBtn.Visible = estado
+    powerBtn.Visible = estado
+    toggleBtn.Text = estado and "👁" or "❌"
+end
+
+toggleBtn.MouseButton1Click:Connect(function()
+    setOpcoesVisiveis(not opcoesVisiveis)
+end)
+
+local function pontoDentro(px, py, obj)
+    local ap = obj.AbsolutePosition
+    local as = obj.AbsoluteSize
+    return px >= ap.X and px <= ap.X + as.X and py >= ap.Y and py <= ap.Y + as.Y
+end
+
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if input.UserInputType ~= Enum.UserInputType.Touch then return end
+    local pos = input.Position
+
+    if moveButton.Visible and pontoDentro(pos.X, pos.Y, moveButton) then
+        draggingPanel = input
+        lastTouchPos = pos
+        return
+    end
+
+    if toggleBtn.Visible and pontoDentro(pos.X, pos.Y, toggleBtn) then return end
+    if sensMinus.Visible and pontoDentro(pos.X, pos.Y, sensMinus) then return end
+    if sensPlus.Visible and pontoDentro(pos.X, pos.Y, sensPlus) then return end
+    if autoBtn.Visible and pontoDentro(pos.X, pos.Y, autoBtn) then return end
+    if powerBtn.Visible and pontoDentro(pos.X, pos.Y, powerBtn) then return end
+
+    if pontoDentro(pos.X, pos.Y, touchpad) then
+        touchpadTouch = input
+        lastTouchPos = pos
+        touchStartPos = pos
+        lastTapTime = tick()
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input, gameProcessed)
+    if input.UserInputType ~= Enum.UserInputType.Touch then return end
+    local pos = input.Position
+
+    if draggingPanel == input then
+        local delta = pos - lastTouchPos
+        touchpad.Position += UDim2.new(0, delta.X, 0, delta.Y)
+        lastTouchPos = pos
+        return
+    end
+
+    if touchpadTouch == input then
+        local delta = pos - lastTouchPos
+        cursorX += delta.X * speed
+        cursorY += delta.Y * speed
+        lastTouchPos = pos
+        updateRobloxCursor()
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(input, gameProcessed)
+    if input.UserInputType ~= Enum.UserInputType.Touch then return end
+
+    if touchpadTouch == input then
+        local timeHeld = tick() - lastTapTime
+        local totalMoved = (input.Position - touchStartPos).Magnitude
+        if timeHeld <= TAP_THRESHOLD and totalMoved < 40 then
+            doClick()
+        end
+        touchpadTouch = nil
+    end
+
+    if draggingPanel == input then
+        draggingPanel = nil
+    end
+end)
+
+RunService.RenderStepped:Connect(function()
+    local vs = workspace.CurrentCamera.ViewportSize
+    local nx = math.clamp(cursorX, 0, vs.X - 52)
+    local ny = math.clamp(cursorY, 0, vs.Y - 52)
+    if nx ~= cursorX or ny ~= cursorY then
+        cursorX, cursorY = nx, ny
+        updateRobloxCursor()
+    end
+    visualCursor.Position = UDim2.new(0, cursorX, 0, cursorY)
+end)
+
+updateSensLabel()
+atualizarBotaoAuto()
+atualizarBotaoPotencia()
+print("✅ Virtual Mouse + AUTO POTENTE carregado (até 500 CPS sem lag)!")
